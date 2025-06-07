@@ -1,9 +1,10 @@
-// controllers/catwaysController.js
-
 const catwayService = require("../services/catways");
 
 /**
  * Récupérer tous les catways.
+ * @param {import("express").Request} req - Objet requête Express
+ * @param {import("express").Response} res - Objet réponse Express
+ * @returns {Promise<void>}
  */
 exports.getAll = async (req, res) => {
   try {
@@ -16,6 +17,9 @@ exports.getAll = async (req, res) => {
 
 /**
  * Récupérer un catway par son numéro.
+ * @param {import("express").Request} req - Objet requête Express
+ * @param {import("express").Response} res - Objet réponse Express
+ * @returns {Promise<void>}
  */
 exports.getById = async (req, res) => {
   try {
@@ -28,6 +32,9 @@ exports.getById = async (req, res) => {
 
 /**
  * Créer un catway.
+ * @param {import("express").Request} req - Objet requête Express
+ * @param {import("express").Response} res - Objet réponse Express
+ * @returns {Promise<void>}
  */
 exports.create = async (req, res) => {
   try {
@@ -40,6 +47,9 @@ exports.create = async (req, res) => {
 
 /**
  * Mettre à jour un catway.
+ * @param {import("express").Request} req - Objet requête Express
+ * @param {import("express").Response} res - Objet réponse Express
+ * @returns {Promise<void>}
  */
 exports.update = async (req, res) => {
   try {
@@ -52,6 +62,9 @@ exports.update = async (req, res) => {
 
 /**
  * Supprimer un catway.
+ * @param {import("express").Request} req - Objet requête Express
+ * @param {import("express").Response} res - Objet réponse Express
+ * @returns {Promise<void>}
  */
 exports.delete = async (req, res) => {
   try {

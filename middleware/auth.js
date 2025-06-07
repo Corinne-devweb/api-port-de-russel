@@ -1,5 +1,16 @@
 const jwt = require("jsonwebtoken");
 
+/**
+ * Middleware d'authentification basé sur JWT.
+ * Vérifie que le header Authorization contient un token JWT valide.
+ * Si le token est valide, ajoute l'objet décodé dans req.user et appelle next().
+ * Sinon, renvoie une erreur 401 ou 403 selon le cas.
+ *
+ * @param {Object} req - L'objet requête Express.
+ * @param {Object} res - L'objet réponse Express.
+ * @param {Function} next - La fonction middleware pour passer au middleware suivant.
+ * @returns {void}
+ */
 const authMiddleware = (req, res, next) => {
   const authHeader = req.header("Authorization");
 

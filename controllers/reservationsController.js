@@ -1,6 +1,15 @@
 const reservationService = require("../services/reservations");
 
+/**
+ * Controller pour gérer les réservations.
+ */
 const reservationController = {
+  /**
+   * Récupérer toutes les réservations.
+   * @param {import("express").Request} req - Objet requête Express
+   * @param {import("express").Response} res - Objet réponse Express
+   * @returns {Promise<void>}
+   */
   getAll: async (req, res) => {
     try {
       const reservations = await reservationService.getAll();
@@ -10,6 +19,12 @@ const reservationController = {
     }
   },
 
+  /**
+   * Créer une nouvelle réservation pour un catway donné.
+   * @param {import("express").Request} req - Contient params.catwayId et body des données de réservation
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   */
   create: async (req, res) => {
     try {
       const catwayId = Number(req.params.catwayId);
@@ -21,6 +36,12 @@ const reservationController = {
     }
   },
 
+  /**
+   * Récupérer une réservation par son ID et vérifier qu’elle appartient au catway.
+   * @param {import("express").Request} req - Contient params.catwayId et params.reservationId
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   */
   getById: async (req, res) => {
     try {
       const { catwayId, reservationId } = req.params;
@@ -38,6 +59,12 @@ const reservationController = {
     }
   },
 
+  /**
+   * Mettre à jour une réservation si elle appartient au catway.
+   * @param {import("express").Request} req - Contient params.catwayId, params.reservationId, body updateData
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   */
   update: async (req, res) => {
     try {
       const { catwayId, reservationId } = req.params;
@@ -49,7 +76,7 @@ const reservationController = {
           .json({ message: "Réservation non trouvée pour ce catway" });
       }
 
-      // Pour éviter que catwayNumber soit modifié vers un autre catway que celui de l'URL
+      // Empêche la modification du catwayNumber vers un autre catway que celui de l'URL
       const updateData = { ...req.body, catwayNumber: Number(catwayId) };
 
       const updatedReservation = await reservationService.update(
@@ -62,6 +89,12 @@ const reservationController = {
     }
   },
 
+  /**
+   * Supprimer une réservation si elle appartient au catway.
+   * @param {import("express").Request} req - Contient params.catwayId et params.reservationId
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   */
   delete: async (req, res) => {
     try {
       const { catwayId, reservationId } = req.params;
@@ -80,6 +113,12 @@ const reservationController = {
     }
   },
 
+  /**
+   * Récupérer toutes les réservations associées à un catway.
+   * @param {import("express").Request} req - Contient params.catwayId
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   */
   getByCatway: async (req, res) => {
     try {
       const reservations = await reservationService.getByCatway(
