@@ -1,5 +1,18 @@
 const Catway = require("../models/catways");
 
+/**
+ * Middleware pour vérifier si un catway existe en base de données.
+ * Récupère l'identifiant du catway depuis les paramètres de la requête,
+ * vérifie que c'est un nombre valide, puis cherche le catway dans la base.
+ * Si trouvé, ajoute le catway dans `req.catway` et passe au middleware suivant.
+ * Sinon, renvoie une erreur 400 (id invalide) ou 404 (non trouvé).
+ * En cas d'erreur serveur, renvoie une erreur 500.
+ *
+ * @param {Object} req - L'objet requête Express
+ * @param {Object} res - L'objet réponse Express
+ * @param {Function} next - Fonction pour passer au middleware suivant
+ * @returns {void} - Ne retourne rien, mais envoie une réponse en cas d'erreur
+ */
 const checkCatwayExists = async (req, res, next) => {
   try {
     const catwayIdRaw = req.params.catwayId || req.params.id;

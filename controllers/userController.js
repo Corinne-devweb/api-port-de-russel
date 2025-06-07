@@ -3,6 +3,9 @@ const userService = require("../services/users");
 
 /**
  * Créer un nouvel utilisateur.
+ * @param {import("express").Request} req - Contient les données de l'utilisateur dans req.body
+ * @param {import("express").Response} res
+ * @returns {Promise<void>}
  */
 exports.createUser = async (req, res) => {
   try {
@@ -14,7 +17,10 @@ exports.createUser = async (req, res) => {
 };
 
 /**
- * Récupérer tous les utilisateurs.
+ * Récupérer tous les utilisateurs, avec pagination optionnelle.
+ * @param {import("express").Request} req - req.query.page et req.query.limit sont optionnels
+ * @param {import("express").Response} res
+ * @returns {Promise<void>}
  */
 exports.getAllUsers = async (req, res) => {
   try {
@@ -27,7 +33,10 @@ exports.getAllUsers = async (req, res) => {
 };
 
 /**
- * Récupérer un utilisateur par email.
+ * Récupérer un utilisateur par son email.
+ * @param {import("express").Request} req - req.params.email
+ * @param {import("express").Response} res
+ * @returns {Promise<void>}
  */
 exports.getUserByEmail = async (req, res) => {
   try {
@@ -39,7 +48,10 @@ exports.getUserByEmail = async (req, res) => {
 };
 
 /**
- * Mettre à jour un utilisateur par email.
+ * Mettre à jour un utilisateur par son email.
+ * @param {import("express").Request} req - req.params.email et req.body données mises à jour
+ * @param {import("express").Response} res
+ * @returns {Promise<void>}
  */
 exports.updateUser = async (req, res) => {
   try {
@@ -54,7 +66,10 @@ exports.updateUser = async (req, res) => {
 };
 
 /**
- * Supprimer un utilisateur par email.
+ * Supprimer un utilisateur par son email.
+ * @param {import("express").Request} req - req.params.email
+ * @param {import("express").Response} res
+ * @returns {Promise<void>}
  */
 exports.deleteUser = async (req, res) => {
   try {
@@ -66,8 +81,10 @@ exports.deleteUser = async (req, res) => {
 };
 
 /**
- * Authentifier un utilisateur (login).
- * Génère un token JWT à renvoyer au client.
+ * Authentifier un utilisateur (login) et générer un token JWT.
+ * @param {import("express").Request} req - req.body doit contenir email et password
+ * @param {import("express").Response} res
+ * @returns {Promise<void>}
  */
 exports.loginUser = async (req, res) => {
   try {
@@ -91,7 +108,10 @@ exports.loginUser = async (req, res) => {
 };
 
 /**
- * Déconnexion
+ * Déconnexion utilisateur (simple message de succès).
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @returns {Promise<void>}
  */
 exports.logoutUser = async (req, res) => {
   try {
