@@ -7,8 +7,11 @@ module.exports = {
     return await Catway.find();
   },
 
-  getById: async (catwayId) => {
-    const catway = await Catway.findOne({ catwayNumber: catwayId });
+  getById: async (catwayNumber) => {
+    if (typeof catwayNumber !== "number") {
+      throw new Error("catwayNumber doit être un nombre");
+    }
+    const catway = await Catway.findOne({ catwayNumber });
     if (!catway) throw new Error("Catway non trouvé");
     return catway;
   },
@@ -25,8 +28,12 @@ module.exports = {
     return await newCatway.save();
   },
 
-  update: async (catwayId, { catwayState }) => {
-    const catway = await Catway.findOne({ catwayNumber: catwayId });
+  update: async (catwayNumber, { catwayState }) => {
+    if (typeof catwayNumber !== "number") {
+      throw new Error("catwayNumber doit être un nombre");
+    }
+
+    const catway = await Catway.findOne({ catwayNumber });
     if (!catway) throw new Error("Catway non trouvé");
 
     if (catwayState) {
@@ -36,11 +43,15 @@ module.exports = {
     return await catway.save();
   },
 
-  delete: async (catwayId) => {
-    const catway = await Catway.findOne({ catwayNumber: catwayId });
+  delete: async (catwayNumber) => {
+    if (typeof catwayNumber !== "number") {
+      throw new Error("catwayNumber doit être un nombre");
+    }
+
+    const catway = await Catway.findOne({ catwayNumber });
     if (!catway) throw new Error("Catway non trouvé");
 
-    await Catway.deleteOne({ catwayNumber: catwayId });
+    await Catway.deleteOne({ catwayNumber });
     return { message: "Catway supprimé avec succès" };
   },
 };

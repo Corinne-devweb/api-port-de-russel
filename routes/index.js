@@ -1,11 +1,9 @@
-// routes/index.js
-
 const express = require("express");
 const router = express.Router();
 
 /**
  * @swagger
- * /:
+ * /api:
  *   get:
  *     summary: Point d'entrée de l'API
  *     description: Vérifie si l'API fonctionne correctement en renvoyant un message simple.
@@ -21,40 +19,46 @@ const router = express.Router();
  *                   type: string
  *                   example: API is working!
  */
-
-/**
- * Route GET racine qui renvoie un message de fonctionnement.
- */
-router.get("/", (req, res) => {
+router.get("/api", (req, res) => {
   res.json({ message: "API is working!" });
 });
 
-// Import des fichiers de routes spécifiques
+// Import des routes
 const userRoutes = require("./users");
 const catwayRoutes = require("./catways");
 const reservationRoutes = require("./reservations");
+const userController = require("../controllers/userController"); // ✅ AJOUTÉ pour login/logout
 
-// Routes principales
-router.use("/users", userRoutes);
-router.use("/catways", catwayRoutes);
-router.use("/reservations", reservationRoutes);
+// Routes avec préfixe /api pour une structure RESTful cohérente
+router.use("/api/users", userRoutes);
+router.use("/api/catways", catwayRoutes);
+router.use("/api/catways", reservationRoutes); // Sous-ressource des catways
 
+// ✅ AJOUTÉ : Routes d'authentification (selon les consignes)
 /**
  * @swagger
- * /{any}:
- *   get:
- *     summary: Route non trouvée
- *     description: Gestion des routes non définies (404).
- *     parameters:
- *       - in: path
- *         name: any
- *         schema:
- *           type: string
- *         required: true
- *         description: Toute route non définie dans l'API.
+ * /api/login:
+ *   post:
+ *     summary: Connexion utilisateur
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
  *     responses:
- *       404:
- *         description: Route non trouvée
+ *       200:
+ *         description: Connexion réussie
  *         content:
  *           application/json:
  *             schema:
@@ -62,12 +66,35 @@ router.use("/reservations", reservationRoutes);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Route non trouvée
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       401:
+ *         description: Identifiants incorrects
  */
+router.post("/api/login", userController.loginUser);
 
 /**
- * Middleware pour gérer les routes non trouvées (404)
+ * @swagger
+ * /api/logout:
+ *   get:
+ *     summary: Déconnexion utilisateur
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Déconnexion réussie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  */
+router.get("/api/logout", userController.logoutUser);
+
+// Gestion des routes inconnues (404)
 router.use((req, res) => {
   res.status(404).json({ message: "Route non trouvée" });
 });

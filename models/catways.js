@@ -10,12 +10,11 @@ const catwaySchema = new mongoose.Schema(
     catwayType: {
       type: String,
       required: true,
-      enum: ["petit", "moyen", "grand"],
+      enum: ["long", "short"],
     },
     catwayState: {
       type: String,
       required: true,
-      enum: ["libre", "occupé", "indisponible"],
     },
   },
   {
