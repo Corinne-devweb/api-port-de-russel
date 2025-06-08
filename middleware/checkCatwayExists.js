@@ -11,7 +11,7 @@ const Catway = require("../models/catways");
  * @param {Object} req - L'objet requête Express
  * @param {Object} res - L'objet réponse Express
  * @param {Function} next - Fonction pour passer au middleware suivant
- * @returns {void} - Ne retourne rien, mais envoie une réponse en cas d'erreur
+ * @returns {void}
  */
 const checkCatwayExists = async (req, res, next) => {
   try {

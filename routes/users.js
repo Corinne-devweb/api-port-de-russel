@@ -1,3 +1,4 @@
+// routes/users.js
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
@@ -14,6 +15,21 @@ const authMiddleware = require("../middleware/auth");
  *     responses:
  *       200:
  *         description: Liste des utilisateurs récupérée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *       401:
+ *         description: Non autorisé
  */
 router.get("/", authMiddleware, userController.getAllUsers);
 
@@ -31,10 +47,26 @@ router.get("/", authMiddleware, userController.getAllUsers);
  *         required: true
  *         schema:
  *           type: string
+ *           format: email
  *         description: Email de l'utilisateur
  *     responses:
  *       200:
  *         description: Utilisateur trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       401:
+ *         description: Non autorisé
  */
 router.get("/:email", authMiddleware, userController.getUserByEmail);
 
@@ -50,16 +82,38 @@ router.get("/:email", authMiddleware, userController.getUserByEmail);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
  *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
  *               email:
  *                 type: string
+ *                 format: email
  *               password:
  *                 type: string
- *               name:
- *                 type: string
+ *                 minLength: 6
  *     responses:
  *       201:
- *         description: Utilisateur créé
+ *         description: Utilisateur créé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       400:
+ *         description: Données invalides
+ *       409:
+ *         description: Email déjà utilisé
  */
 router.post("/", userController.createUser);
 
@@ -77,6 +131,7 @@ router.post("/", userController.createUser);
  *         required: true
  *         schema:
  *           type: string
+ *           format: email
  *         description: Email de l'utilisateur à mettre à jour
  *     requestBody:
  *       required: true
@@ -85,13 +140,21 @@ router.post("/", userController.createUser);
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               username:
  *                 type: string
+ *                 minLength: 3
  *               password:
  *                 type: string
+ *                 minLength: 6
  *     responses:
  *       200:
- *         description: Utilisateur mis à jour
+ *         description: Utilisateur mis à jour avec succès
+ *       400:
+ *         description: Données invalides
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       401:
+ *         description: Non autorisé
  */
 router.put("/:email", authMiddleware, userController.updateUser);
 
@@ -109,48 +172,16 @@ router.put("/:email", authMiddleware, userController.updateUser);
  *         required: true
  *         schema:
  *           type: string
+ *           format: email
  *         description: Email de l'utilisateur à supprimer
  *     responses:
  *       200:
- *         description: Utilisateur supprimé
+ *         description: Utilisateur supprimé avec succès
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       401:
+ *         description: Non autorisé
  */
 router.delete("/:email", authMiddleware, userController.deleteUser);
-
-/**
- * @swagger
- * /users/login:
- *   post:
- *     summary: Connexion de l'utilisateur
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Connexion réussie
- */
-router.post("/login", userController.loginUser);
-
-/**
- * @swagger
- * /users/logout:
- *   get:
- *     summary: Déconnexion de l'utilisateur
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Déconnexion réussie
- */
-router.get("/logout", authMiddleware, userController.logoutUser);
 
 module.exports = router;
