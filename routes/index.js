@@ -34,8 +34,8 @@ router.get("/home", function (req, res) {
   res.render("index", { error: null });
 });
 
-// Connexion
-router.post("/login", async function (req, res) {
+// Connexion (HTML via EJS)
+router.post("/auth/login", async function (req, res) {
   try {
     const { email, password } = req.body;
 
@@ -43,9 +43,8 @@ router.post("/login", async function (req, res) {
       return res.render("index", { error: "Email et mot de passe requis" });
     }
 
-    // Authentification
     const user = await userService.authenticateUser(email, password);
-    currentUser = user; // Stockage simple
+    currentUser = user;
 
     res.redirect("/dashboard");
   } catch (error) {
@@ -123,7 +122,7 @@ router.get("/logout", (req, res) => {
 
 // ====== ROUTES CRUD POUR VUES EJS (sans JWT) ======
 
-// Routes CRUD Catways pour EJS
+// Catways
 router.post("/catways/create", checkAuth, async (req, res) => {
   try {
     const catway = await catwayService.create(req.body);
@@ -154,7 +153,7 @@ router.delete("/catways/:id/delete", checkAuth, async (req, res) => {
   }
 });
 
-// Routes CRUD Réservations pour EJS
+// Réservations
 router.post("/reservations/:catwayId/create", checkAuth, async (req, res) => {
   try {
     const data = { ...req.body, catwayNumber: parseInt(req.params.catwayId) };
@@ -194,7 +193,7 @@ router.delete(
   }
 );
 
-// Routes CRUD Users pour EJS
+// Utilisateurs
 router.post("/users/create", checkAuth, async (req, res) => {
   try {
     const user = await userService.createUser(req.body);
@@ -256,6 +255,6 @@ router.use("/catways", reservationRoutes);
  *       401:
  *         description: Identifiants incorrects
  */
-router.post("/login", userController.loginUser);
+router.post("/login", userController.loginUser); // Route API REST — inchangée
 
 module.exports = router;
