@@ -53,23 +53,19 @@ app.use("/", indexRouter);
 // Gestion des routes non trouvées (404)
 
 app.use((req, res) => {
-  res.status(404).send("Page non trouvée");
+  // Gère les 404 en HTML si acceptée, sinon JSON
+  if (req.accepts("html")) {
+    // Redirection vers la page d'accueil au lieu d'une vue 404
+    res.status(404).redirect("/home");
+  } else {
+    res.status(404).json({
+      name: "API",
+      version: "1.0",
+      status: 404,
+      message: "not_found",
+    });
+  }
 });
-
-// app.use((req, res) => {
-//   // Gère les 404 en HTML si acceptée, sinon JSON
-//   if (req.accepts("html")) {
-//     // Redirection vers la page d'accueil au lieu d'une vue 404
-//     res.status(404).redirect("/home");
-//   } else {
-//     res.status(404).json({
-//       name: "API",
-//       version: "1.0",
-//       status: 404,
-//       message: "not_found",
-//     });
-//   }
-// });
 
 // Gestion des erreurs
 app.use((err, req, res, next) => {
