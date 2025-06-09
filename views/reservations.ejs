@@ -69,8 +69,8 @@
           <td><%= r.catwayNumber %></td>
           <td><%= r.clientName %></td>
           <td><%= r.boatName %></td>
-          <td><%= new Date(r.startDate).toLocaleDateString() %></td>
-          <td><%= new Date(r.endDate).toLocaleDateString() %></td>
+          <td><%= new Date(r.startDate).toLocaleDateString('fr-FR') %></td>
+          <td><%= new Date(r.endDate).toLocaleDateString('fr-FR') %></td>
           <td>
             <button class="btn-warning" onclick="showEditForm('<%= r._id %>')">
               Modifier
@@ -200,68 +200,45 @@
         }
       }
 
-      function showEditForm(reservationId) {
-        const reservation = reservations.find(function (r) {
-          return r._id === reservationId;
-        });
-        if (!reservation) {
-          showMessage('Réservation non trouvée', 'error');
-          return;
-        }
+      function showEditForm(id) {
+        const reservation = reservations.find(r => r._id === id);
+        if (!reservation) return;
+
+        const editSection = document.getElementById('editSection');
+        editSection.classList.remove('hidden');
 
         const form = document.getElementById('editReservationForm');
-        const section = document.getElementById('editSection');
-
-        section.classList.remove('hidden');
-
         form.id.value = reservation._id;
         form.originalCatwayNumber.value = reservation.catwayNumber;
         form.catwayNumber.value = reservation.catwayNumber;
         form.clientName.value = reservation.clientName;
         form.boatName.value = reservation.boatName;
-        form.startDate.value = new Date(reservation.startDate).toISOString().slice(0, 10);
-        form.endDate.value = new Date(reservation.endDate).toISOString().slice(0, 10);
+        form.startDate.value = reservation.startDate.split('T')[0];
+        form.endDate.value = reservation.endDate.split('T')[0];
       }
 
       function hideEditForm() {
-        document.getElementById('editSection').classList.add('hidden');
+        const editSection = document.getElementById('editSection');
+        editSection.classList.add('hidden');
       }
 
       document.getElementById('editReservationForm').addEventListener('submit', async function (e) {
         e.preventDefault();
+
         const form = e.target;
-        const reservationId = form.id.value;
-        const catwayNumber = form.originalCatwayNumber.value;
-
-        // Conversion des dates en format ISO pour éviter les problèmes de timezone
-        const startDate = new Date(form.startDate.value + 'T00:00:00.000Z');
-        const endDate = new Date(form.endDate.value + 'T23:59:59.999Z');
-
-        // Vérification côté client avant envoi
-        if (endDate <= startDate) {
-          showMessage('Erreur : La date de fin doit être postérieure à la date de début', 'error');
-          return;
-        }
+        const id = form.id.value;
+        const originalCatwayNumber = form.originalCatwayNumber.value;
+        const catwayNumber = form.catwayNumber.value;
 
         const data = {
-          catwayNumber: Number(form.catwayNumber.value),
           clientName: form.clientName.value,
           boatName: form.boatName.value,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate: form.startDate.value,
+          endDate: form.endDate.value,
         };
 
-        // Log de débogage (à supprimer une fois que ça marche)
-        console.log('Dates envoyées:', {
-          startDate: data.startDate,
-          endDate: data.endDate,
-          startOriginal: form.startDate.value,
-          endOriginal: form.endDate.value
-        });
-
         try {
-          // Utilisation de la route EJS qui fonctionne comme création/suppression
-          const res = await fetch('/reservations/' + catwayNumber + '/' + reservationId + '/update', {
+          const res = await fetch('/reservations/' + originalCatwayNumber + '/' + id + '/update', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),

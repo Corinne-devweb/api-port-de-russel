@@ -23,7 +23,7 @@
         Utilisateur connecté : <strong><%= user.username %></strong> (<%=
         user.email %>)
       </p>
-      <p>Date du jour : <%= new Date().toLocaleDateString() %></p>
+      <p>Date du jour : <%= new Date().toLocaleDateString('fr-FR') %></p>
     </div>
 
     <section>
@@ -45,8 +45,8 @@
             <td><%= r.catwayNumber %></td>
             <td><%= r.clientName %></td>
             <td><%= r.boatName %></td>
-            <td><%= new Date(r.startDate).toLocaleDateString() %></td>
-            <td><%= new Date(r.endDate).toLocaleDateString() %></td>
+            <td><%= new Date(r.startDate).toLocaleDateString('fr-FR') %></td>
+            <td><%= new Date(r.endDate).toLocaleDateString('fr-FR') %></td>
           </tr>
           <% }) %>
         </tbody>

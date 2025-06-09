@@ -1,3 +1,5 @@
+require("dotenv").config({ path: "./env/.env" }); // charge les variables d'environnement
+
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -17,7 +19,6 @@ const app = express();
 (async () => {
   try {
     await initClientDbConnection();
-    console.log("MongoDB connecté");
   } catch (error) {
     console.error("Erreur de connexion à MongoDB :", error);
     process.exit(1);
@@ -39,10 +40,7 @@ app.use(cookieParser());
 
 // ====== CONFIGURATION EJS ======
 app.set("view engine", "ejs");
-app.set("views", __dirname + "/views");
-
-// Pour les fichiers statiques
-app.use(express.static(path.join(__dirname, "public")));
+app.set("views", path.join(__dirname, "views"));
 
 // Documentation Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -50,11 +48,12 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes principales
 app.use("/", indexRouter);
 
+// Pour les fichiers statiques
+app.use(express.static(path.join(__dirname, "public")));
+
 // Gestion des routes non trouvées (404)
 app.use((req, res) => {
-  // Gère les 404 en HTML si acceptée, sinon JSON
   if (req.accepts("html")) {
-    // Redirection vers la page d'accueil au lieu d'une vue 404
     res.status(404).redirect("/home");
   } else {
     res.status(404).json({
