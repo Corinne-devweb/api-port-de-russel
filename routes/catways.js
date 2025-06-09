@@ -1,4 +1,3 @@
-// routes/catways.js
 const express = require("express");
 const router = express.Router();
 const catwaysController = require("../controllers/catwaysController");
@@ -81,7 +80,7 @@ router.get("/:id", (req, res, next) => {
       .json({ error: "L'ID doit être un entier valide (numéro de catway)" });
   }
   req.params.id = catwayNumber;
-  catwaysController.getById(req, res, next); // ✅ CORRIGÉ : getById au lieu de getByNumber
+  catwaysController.getById(req, res, next);
 });
 
 /**

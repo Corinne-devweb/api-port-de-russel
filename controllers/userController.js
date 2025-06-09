@@ -39,6 +39,18 @@ const userController = {
   },
 
   /**
+   * Récupérer tous les utilisateurs (sans req, res) - pour rendu vue EJS.
+   * @returns {Promise<Array>} Liste des utilisateurs
+   */
+  getAllUsersData: async () => {
+    try {
+      return await userService.getAllUsers();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+
+  /**
    * Récupérer un utilisateur par son email.
    * Route: GET /users/:email
    * @param {import("express").Request} req - req.params.email

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Port de Russel - Connexion</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <h1>Port de Russel</h1>
+      <p class="center">
+        Application de gestion des réservations de catways pour la capitainerie.
+      </p>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+      <div class="error"><%= error %></div>
+      <% } %>
+
+      <form action="/login" method="POST">
+        <label>
+          Email :
+          <input type="email" name="email" required />
+        </label>
+
+        <label>
+          Mot de passe :
+          <input type="password" name="password" required />
+        </label>
+
+        <button class="btn-connect" type="submit">Se connecter</button>
+      </form>
+
+      <p><a href="/api-docs">Documentation de l'API</a></p>
+    </div>
+  </body>
+</html>

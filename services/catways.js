@@ -1,57 +1,84 @@
-// services/catways.js
-
 const Catway = require("../models/catways");
 
-module.exports = {
-  getAll: async () => {
-    return await Catway.find();
+const catwayService = {
+  // Récupérer tous les catways
+  async getAll() {
+    try {
+      return await Catway.find();
+    } catch (error) {
+      throw error;
+    }
   },
 
-  getById: async (catwayNumber) => {
-    if (typeof catwayNumber !== "number") {
-      throw new Error("catwayNumber doit être un nombre");
+  // Récupérer un catway par son numéro
+  async getById(catwayNumber) {
+    try {
+      const catway = await Catway.findOne({ catwayNumber });
+      if (!catway) {
+        throw new Error("Catway non trouvé");
+      }
+      return catway;
+    } catch (error) {
+      throw error;
     }
-    const catway = await Catway.findOne({ catwayNumber });
-    if (!catway) throw new Error("Catway non trouvé");
-    return catway;
   },
 
-  create: async ({ catwayNumber, catwayType, catwayState }) => {
-    if (!catwayNumber || !catwayType || !catwayState) {
-      throw new Error("Tous les champs sont requis");
+  // Créer un catway
+  async create(catwayData) {
+    try {
+      const { catwayNumber, catwayType, catwayState } = catwayData;
+
+      // Vérifier si le numéro existe déjà
+      const existingCatway = await Catway.findOne({ catwayNumber });
+      if (existingCatway) {
+        throw new Error("Ce numéro de catway existe déjà");
+      }
+
+      const catway = new Catway({
+        catwayNumber,
+        catwayType,
+        catwayState,
+      });
+
+      return await catway.save();
+    } catch (error) {
+      throw error;
     }
-
-    const existing = await Catway.findOne({ catwayNumber });
-    if (existing) throw new Error("Un catway avec ce numéro existe déjà");
-
-    const newCatway = new Catway({ catwayNumber, catwayType, catwayState });
-    return await newCatway.save();
   },
 
-  update: async (catwayNumber, { catwayState }) => {
-    if (typeof catwayNumber !== "number") {
-      throw new Error("catwayNumber doit être un nombre");
+  // Mettre à jour un catway
+  async update(catwayNumber, updateData) {
+    try {
+      const catway = await Catway.findOneAndUpdate(
+        { catwayNumber },
+        updateData,
+        { new: true, runValidators: true }
+      );
+
+      if (!catway) {
+        throw new Error("Catway non trouvé");
+      }
+
+      return catway;
+    } catch (error) {
+      throw error;
     }
-
-    const catway = await Catway.findOne({ catwayNumber });
-    if (!catway) throw new Error("Catway non trouvé");
-
-    if (catwayState) {
-      catway.catwayState = catwayState;
-    }
-
-    return await catway.save();
   },
 
-  delete: async (catwayNumber) => {
-    if (typeof catwayNumber !== "number") {
-      throw new Error("catwayNumber doit être un nombre");
+  // Supprimer un catway
+  async delete(catwayNumber) {
+    try {
+      const catway = await Catway.findOneAndDelete({ catwayNumber });
+
+      if (!catway) {
+        throw new Error("Catway non trouvé");
+      }
+
+      return catway;
+    } catch (error) {
+      throw error;
     }
-
-    const catway = await Catway.findOne({ catwayNumber });
-    if (!catway) throw new Error("Catway non trouvé");
-
-    await Catway.deleteOne({ catwayNumber });
-    return { message: "Catway supprimé avec succès" };
   },
 };
+
+module.exports = catwayService;

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de bord</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Tableau de bord - Port de plaisance de Russel</h1>
+      <nav>
+        <a href="/catways">Catways</a>
+        <a href="/reservations">Réservations</a>
+        <a href="/users">Utilisateurs</a>
+        <a href="/api-docs">Documentation API</a>
+        <a href="/logout">Déconnexion</a>
+      </nav>
+    </header>
+
+    <div class="user-info">
+      <p>
+        Utilisateur connecté : <strong><%= user.username %></strong> (<%=
+        user.email %>)
+      </p>
+      <p>Date du jour : <%= new Date().toLocaleDateString() %></p>
+    </div>
+
+    <section>
+      <h2>Réservations en cours</h2>
+      <% if (reservations && reservations.length > 0) { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Catway</th>
+            <th>Client</th>
+            <th>Bateau</th>
+            <th>Début</th>
+            <th>Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% reservations.forEach(r => { %>
+          <tr>
+            <td><%= r.catwayNumber %></td>
+            <td><%= r.clientName %></td>
+            <td><%= r.boatName %></td>
+            <td><%= new Date(r.startDate).toLocaleDateString() %></td>
+            <td><%= new Date(r.endDate).toLocaleDateString() %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <% } else { %>
+      <p>Aucune réservation en cours.</p>
+      <% } %>
+    </section>
+  </body>
+</html>
