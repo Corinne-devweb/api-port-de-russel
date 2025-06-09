@@ -42,13 +42,13 @@ h2 {
    LIENS ET NAVIGATION
 ======================================== */
 a {
-  color: #3498db;
+  color: #0d0f10;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 a:hover {
-  color: #2980b9;
+  color: #c8c8cf;
   text-decoration: underline;
 }
 
