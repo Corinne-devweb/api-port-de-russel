@@ -34,6 +34,18 @@ const authMiddleware = require("../middleware/auth");
 router.get("/", authMiddleware, userController.getAllUsers);
 
 /**
+ * Route pour afficher la page utilisateurs (vue EJS)
+ */
+router.get("/view", authMiddleware, async (req, res, next) => {
+  try {
+    const users = await userController.getAllUsersData();
+    res.render("users", { users }); // users.ejs dans dossier views
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * @swagger
  * /users/{email}:
  *   get:

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Utilisateurs</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <h1>Gestion des Utilisateurs</h1>
+    <a href="/dashboard" class="back-link">Retour au tableau de bord</a>
+
+    <div id="message"></div>
+
+    <h2>Créer un utilisateur</h2>
+    <form id="createUserForm">
+      <label>
+        Nom d'utilisateur :
+        <input type="text" name="username" required />
+      </label>
+
+      <label>
+        Email :
+        <input type="email" name="email" required />
+      </label>
+
+      <label>
+        Mot de passe :
+        <input type="password" name="password" required />
+      </label>
+
+      <button class="btn-success" type="submit">Créer</button>
+    </form>
+
+    <!-- Formulaire de modification (caché par défaut) -->
+    <div id="editUserForm" style="display: none">
+      <h2>Modifier un utilisateur</h2>
+      <form id="updateUserForm">
+        <input type="hidden" id="editEmail" />
+
+        <label>
+          Nouveau nom d'utilisateur :
+          <input type="text" id="editUsername" required />
+        </label>
+
+        <label>
+          Nouveau mot de passe (optionnel) :
+          <input type="password" id="editPassword" />
+        </label>
+
+        <button class="btn-warning" type="submit">Modifier</button>
+        <button type="button" onclick="cancelEdit()">Annuler</button>
+      </form>
+    </div>
+
+    <h2>Liste des utilisateurs</h2>
+    <% if (users && users.length > 0) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom d'utilisateur</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(function(user) { %>
+        <tr>
+          <td><%= user.username %></td>
+          <td><%= user.email %></td>
+          <td>
+            <button
+              class="btn-warning"
+              onclick="editUser('<%= user.email %>', '<%= user.username %>')"
+            >
+              Modifier
+            </button>
+            <button
+              class="btn-danger"
+              onclick="deleteUser('<%= user.email %>')"
+            >
+              Supprimer
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } else { %>
+    <p>Aucun utilisateur trouvé.</p>
+    <% } %>
+
+    <script>
+      function showMessage(message, type) {
+        document.getElementById("message").innerHTML =
+          '<div class="' + type + '">' + message + "</div>";
+      }
+
+      // Création d'utilisateur
+      document
+        .getElementById("createUserForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const form = e.target;
+
+          const data = {
+            username: form.username.value,
+            email: form.email.value,
+            password: form.password.value,
+          };
+
+          try {
+            const res = await fetch("/users/create", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+            if (result.success) {
+              showMessage("Utilisateur créé avec succès !", "success");
+              form.reset();
+              setTimeout(function () {
+                location.reload();
+              }, 1000);
+            } else {
+              showMessage("Erreur : " + result.error, "error");
+            }
+          } catch (error) {
+            showMessage("Erreur : " + error.message, "error");
+          }
+        });
+
+      // Suppression d'utilisateur
+      async function deleteUser(email) {
+        if (!confirm("Voulez-vous supprimer cet utilisateur ?")) return;
+
+        try {
+          const res = await fetch(
+            "/users/" + encodeURIComponent(email) + "/delete",
+            {
+              method: "DELETE",
+            }
+          );
+
+          const result = await res.json();
+          if (result.success) {
+            showMessage("Utilisateur supprimé avec succès !", "success");
+            setTimeout(function () {
+              location.reload();
+            }, 1000);
+          } else {
+            showMessage("Erreur : " + result.error, "error");
+          }
+        } catch (error) {
+          showMessage("Erreur : " + error.message, "error");
+        }
+      }
+
+      // Modification d'utilisateur
+      function editUser(email, username) {
+        document.getElementById("editEmail").value = email;
+        document.getElementById("editUsername").value = username;
+        document.getElementById("editPassword").value = "";
+        document.getElementById("editUserForm").style.display = "block";
+
+        // Scroll vers le formulaire
+        document.getElementById("editUserForm").scrollIntoView();
+      }
+
+      function cancelEdit() {
+        document.getElementById("editUserForm").style.display = "none";
+      }
+
+      // Soumission du formulaire de modification
+      document
+        .getElementById("updateUserForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("editEmail").value;
+          const username = document.getElementById("editUsername").value;
+          const password = document.getElementById("editPassword").value;
+
+          const data = { username };
+          if (password) {
+            data.password = password;
+          }
+
+          try {
+            const res = await fetch(
+              "/users/" + encodeURIComponent(email) + "/update",
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+              }
+            );
+
+            const result = await res.json();
+            if (result.success) {
+              showMessage("Utilisateur modifié avec succès !", "success");
+              cancelEdit();
+              setTimeout(function () {
+                location.reload();
+              }, 1000);
+            } else {
+              showMessage("Erreur : " + result.error, "error");
+            }
+          } catch (error) {
+            showMessage("Erreur : " + error.message, "error");
+          }
+        });
+    </script>
+  </body>
+</html>

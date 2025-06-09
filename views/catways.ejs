@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Catways</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <h1>Gestion des Catways</h1>
+    <a href="/dashboard" class="back-link">Retour au tableau de bord</a>
+
+    <div id="message"></div>
+
+    <h2>Créer un catway</h2>
+    <form id="createCatwayForm">
+      <label>
+        Numéro :
+        <input type="number" name="catwayNumber" required />
+      </label>
+
+      <label>
+        Type :
+        <select name="catwayType" required>
+          <option value="">--Choisir--</option>
+          <option value="long">Long</option>
+          <option value="short">Short</option>
+        </select>
+      </label>
+
+      <label>
+        État :
+        <input type="text" name="catwayState" required />
+      </label>
+
+      <button class="btn-success" type="submit">Créer</button>
+    </form>
+
+    <h2>Liste des catways</h2>
+    <% if (catways && catways.length > 0) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Numéro</th>
+          <th>Type</th>
+          <th>État</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% catways.forEach(catway => { %>
+        <tr>
+          <td><%= catway.catwayNumber %></td>
+          <td><%= catway.catwayType %></td>
+          <td>
+            <input
+              type="text"
+              value="<%= catway.catwayState %>"
+              id="state-<%= catway.catwayNumber %>"
+            />
+          </td>
+          <td>
+            <button
+              class="btn-warning"
+              onclick="updateCatway('<%= catway.catwayNumber %>')"
+            >
+              Modifier
+            </button>
+            <button
+              class="btn-danger"
+              onclick="deleteCatway('<%= catway.catwayNumber %>')"
+            >
+              Supprimer
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } else { %>
+    <p>Aucun catway trouvé.</p>
+    <% } %>
+
+    <script>
+      function showMessage(message, type) {
+        document.getElementById("message").innerHTML =
+          '<div class="' + type + '">' + message + "</div>";
+      }
+
+      document
+        .getElementById("createCatwayForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            catwayNumber: Number(form.catwayNumber.value),
+            catwayType: form.catwayType.value,
+            catwayState: form.catwayState.value,
+          };
+
+          try {
+            const res = await fetch("/catways/create", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+            if (result.success) {
+              showMessage("Catway créé avec succès !", "success");
+              form.reset();
+              setTimeout(function () {
+                location.reload();
+              }, 1000);
+            } else {
+              showMessage("Erreur : " + result.error, "error");
+            }
+          } catch (error) {
+            showMessage("Erreur : " + error.message, "error");
+          }
+        });
+
+      async function updateCatway(id) {
+        const state = document.getElementById("state-" + id).value;
+        try {
+          const res = await fetch("/catways/" + id + "/update", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ catwayState: state }),
+          });
+
+          const result = await res.json();
+          if (result.success) {
+            showMessage("Catway modifié avec succès !", "success");
+          } else {
+            showMessage("Erreur : " + result.error, "error");
+          }
+        } catch (error) {
+          showMessage("Erreur : " + error.message, "error");
+        }
+      }
+
+      async function deleteCatway(id) {
+        if (!confirm("Voulez-vous supprimer ce catway ?")) return;
+
+        try {
+          const res = await fetch("/catways/" + id + "/delete", {
+            method: "DELETE",
+          });
+
+          const result = await res.json();
+          if (result.success) {
+            showMessage("Catway supprimé avec succès !", "success");
+            setTimeout(function () {
+              location.reload();
+            }, 1000);
+          } else {
+            showMessage("Erreur : " + result.error, "error");
+          }
+        } catch (error) {
+          showMessage("Erreur : " + error.message, "error");
+        }
+      }
+    </script>
+  </body>
+</html>

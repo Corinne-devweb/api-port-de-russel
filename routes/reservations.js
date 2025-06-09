@@ -1,23 +1,21 @@
-// routes/reservations.js
 const express = require("express");
 const router = express.Router();
 const reservationsController = require("../controllers/reservationsController");
 const authMiddleware = require("../middleware/auth");
-const checkCatwayExists = require("../middleware/checkCatwayExists");
 
 /**
  * @swagger
  * tags:
- *   name: Réservations
- *   description: Gestion des réservations (sous-ressource des catways)
+ *   name: Reservations
+ *   description: Gestion des réservations
  */
 
 /**
  * @swagger
- * /api/catways/{id}/reservations:
+ * /catways/{id}/reservations:
  *   get:
  *     summary: Récupère toutes les réservations d'un catway
- *     tags: [Réservations]
+ *     tags: [Reservations]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -26,10 +24,10 @@ const checkCatwayExists = require("../middleware/checkCatwayExists");
  *         required: true
  *         schema:
  *           type: integer
- *         description: Numéro du catway (utilisé comme ID)
+ *         description: Numéro du catway
  *     responses:
  *       200:
- *         description: Liste des réservations du catway
+ *         description: Liste des réservations
  *         content:
  *           application/json:
  *             schema:
@@ -51,24 +49,19 @@ const checkCatwayExists = require("../middleware/checkCatwayExists");
  *                   endDate:
  *                     type: string
  *                     format: date
- *       404:
- *         description: Catway non trouvé
  *       401:
  *         description: Non autorisé
+ *       404:
+ *         description: Catway non trouvé
  */
-router.get(
-  "/:id/reservations",
-  authMiddleware,
-  checkCatwayExists,
-  reservationsController.getByCatway
-);
+router.get("/:id/reservations", authMiddleware, reservationsController.getAll);
 
 /**
  * @swagger
- * /api/catways/{id}/reservations/{idReservation}:
+ * /catways/{id}/reservations/{idReservation}:
  *   get:
  *     summary: Récupère une réservation spécifique
- *     tags: [Réservations]
+ *     tags: [Reservations]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -77,7 +70,7 @@ router.get(
  *         required: true
  *         schema:
  *           type: integer
- *         description: Numéro du catway (utilisé comme ID)
+ *         description: Numéro du catway
  *       - in: path
  *         name: idReservation
  *         required: true
@@ -86,7 +79,7 @@ router.get(
  *         description: ID de la réservation
  *     responses:
  *       200:
- *         description: Réservation trouvée
+ *         description: Détails de la réservation
  *         content:
  *           application/json:
  *             schema:
@@ -106,24 +99,23 @@ router.get(
  *                 endDate:
  *                   type: string
  *                   format: date
- *       404:
- *         description: Réservation non trouvée
  *       401:
  *         description: Non autorisé
+ *       404:
+ *         description: Réservation non trouvée
  */
 router.get(
   "/:id/reservations/:idReservation",
   authMiddleware,
-  checkCatwayExists,
   reservationsController.getById
 );
 
 /**
  * @swagger
- * /api/catways/{id}/reservations:
+ * /catways/{id}/reservations:
  *   post:
  *     summary: Crée une nouvelle réservation
- *     tags: [Réservations]
+ *     tags: [Reservations]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -132,7 +124,7 @@ router.get(
  *         required: true
  *         schema:
  *           type: integer
- *         description: Numéro du catway (utilisé comme ID)
+ *         description: Numéro du catway
  *     requestBody:
  *       required: true
  *       content:
@@ -147,41 +139,36 @@ router.get(
  *             properties:
  *               clientName:
  *                 type: string
- *                 minLength: 1
+ *                 description: Nom du client
  *               boatName:
  *                 type: string
- *                 minLength: 1
+ *                 description: Nom du bateau
  *               startDate:
  *                 type: string
  *                 format: date
+ *                 description: Date de début
  *               endDate:
  *                 type: string
  *                 format: date
+ *                 description: Date de fin
  *     responses:
  *       201:
  *         description: Réservation créée avec succès
  *       400:
  *         description: Données invalides
- *       404:
- *         description: Catway non trouvé
- *       409:
- *         description: Conflit de dates avec une réservation existante
  *       401:
  *         description: Non autorisé
+ *       404:
+ *         description: Catway non trouvé
  */
-router.post(
-  "/:id/reservations",
-  authMiddleware,
-  checkCatwayExists,
-  reservationsController.create
-);
+router.post("/:id/reservations", authMiddleware, reservationsController.create);
 
 /**
  * @swagger
- * /api/catways/{id}/reservations/{idReservation}:
+ * /catways/{id}/reservations/{idReservation}:
  *   put:
  *     summary: Met à jour une réservation
- *     tags: [Réservations]
+ *     tags: [Reservations]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -190,7 +177,7 @@ router.post(
  *         required: true
  *         schema:
  *           type: integer
- *         description: Numéro du catway (utilisé comme ID)
+ *         description: Numéro du catway
  *       - in: path
  *         name: idReservation
  *         required: true
@@ -198,7 +185,7 @@ router.post(
  *           type: string
  *         description: ID de la réservation
  *     requestBody:
- *       required: false
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -206,44 +193,36 @@ router.post(
  *             properties:
  *               clientName:
  *                 type: string
- *                 minLength: 1
  *               boatName:
  *                 type: string
- *                 minLength: 1
  *               startDate:
  *                 type: string
  *                 format: date
  *               endDate:
  *                 type: string
  *                 format: date
- *               catwayNumber:
- *                 type: integer
- *                 description: Permet de déplacer la réservation vers un autre catway
  *     responses:
  *       200:
- *         description: Réservation mise à jour avec succès
+ *         description: Réservation mise à jour
  *       400:
  *         description: Données invalides
- *       404:
- *         description: Réservation non trouvée
- *       409:
- *         description: Conflit de dates avec une réservation existante
  *       401:
  *         description: Non autorisé
+ *       404:
+ *         description: Réservation non trouvée
  */
 router.put(
   "/:id/reservations/:idReservation",
   authMiddleware,
-  checkCatwayExists,
   reservationsController.update
 );
 
 /**
  * @swagger
- * /api/catways/{id}/reservations/{idReservation}:
+ * /catways/{id}/reservations/{idReservation}:
  *   delete:
  *     summary: Supprime une réservation
- *     tags: [Réservations]
+ *     tags: [Reservations]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -252,7 +231,7 @@ router.put(
  *         required: true
  *         schema:
  *           type: integer
- *         description: Numéro du catway (utilisé comme ID)
+ *         description: Numéro du catway
  *       - in: path
  *         name: idReservation
  *         required: true
@@ -262,15 +241,14 @@ router.put(
  *     responses:
  *       200:
  *         description: Réservation supprimée avec succès
- *       404:
- *         description: Réservation non trouvée
  *       401:
  *         description: Non autorisé
+ *       404:
+ *         description: Réservation non trouvée
  */
 router.delete(
   "/:id/reservations/:idReservation",
   authMiddleware,
-  checkCatwayExists,
   reservationsController.delete
 );
 
