@@ -43,7 +43,9 @@ h2 {
 ======================================== */
 a {
   color: #0d0f10;
-  text-decoration: none;
+  text-decoration: non;
+  text-align: center;
+  font-weight: bold;
   transition: color 0.3s ease;
 }
 
