@@ -27,7 +27,6 @@ let currentUser = null;
 
 // Page d'accueil
 router.get("/", function (req, res) {
-  console.log("Route / appelée");
   res.render("index", { error: null });
 });
 
